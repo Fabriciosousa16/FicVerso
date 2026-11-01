@@ -1,7 +1,7 @@
 FROM php:8.3-fpm
 
 # Dependências do sistema
-RUN apt-get update && apt-get install -y \
+RUN apt-get update && apt-get install -y --no-install-recommends \
     git \
     unzip \
     zip \
@@ -12,13 +12,16 @@ RUN apt-get update && apt-get install -y \
     libfreetype6-dev \
     libicu-dev \
     libxml2-dev \
+    libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install -j$(nproc) \
         pdo_mysql \
         bcmath \
         gd \
         intl \
+        mbstring \
         opcache \
+        pcntl \
         zip \
         xml \
     && apt-get clean \
@@ -34,7 +37,6 @@ COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 # Diretório de trabalho
 WORKDIR /var/www
 
-# Usuário padrão do PHP-FPM
 EXPOSE 9000
 
 CMD ["php-fpm"]
